@@ -42,5 +42,15 @@ namespace WebAPIStarter.Tests
             //Completed
 
         }
+
+        [Fact]
+        public void GetCustomer_WhenCalledWithInvalidID_ReturnsNotFoundResult(){
+            CustomerController customerController = new CustomerController();
+            int nonExistingId = 25;
+
+            var getResults = customerController.Read(nonExistingId);
+
+            Assert.IsType<NotFoundResult>(getResults);
+        }
     }
 }
