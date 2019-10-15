@@ -123,14 +123,21 @@ namespace WebAPIStarter.Tests
         public void CreateCustomer_WhenCalled_WithValidCustomer_ReturnsCustomer(){
 
             //Given
-            // var mockService = new Mock<IService<Customer>>();
-            // CustomerController customerController = new CustomerController(mockService.Object);
-            CustomerController customerController = new CustomerController();
             Customer newCustomer = new Customer {
                 FirstName = "Gil",
                 LastName = "Hdz",
                 Email = "some@other.net"
             };
+            Customer modifiedCustomer = new Customer {
+                FirstName = "Gil",
+                LastName = "Hdz",
+                Email = "some@other.net",
+                Id = 1
+            };
+            var mockService = new Mock<IService<Customer>>();
+            mockService.Setup(service => service.Add(newCustomer)).Returns(modifiedCustomer);
+
+            CustomerController customerController = new CustomerController(mockService.Object);
             
             Customer[] testDouble = {new Customer {
                 FirstName = "Gil",
