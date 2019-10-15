@@ -110,5 +110,32 @@ namespace WebAPIStarter.Tests
             // Assert.Equal(getResult.Value, customers[0]); //This one is referential
 
         }
+
+        [Fact]
+        public void CreateCustomer_WhenCalled_WithValidCustomer_ReturnsCustomer(){
+
+            //Given
+            CustomerController customerController = new CustomerController();
+            Customer newCustomer = new Customer {
+                FirstName = "Gil",
+                LastName = "Hdz",
+                Email = "some@other.net"
+            };
+            Customer testDouble = new Customer {
+                FirstName = "Gil",
+                Id = 1,
+                LastName = "Hdz",
+                Email = "some@other.net"
+            };
+
+            //When
+            var getResults = (CreatedResult) customerController.Create(newCustomer);
+
+            //Then
+            var res = getResults.Value as Customer;
+            res.Should().Equals(testDouble); //Kind of shouldn't work, but it does
+            //Completed
+
+        }
     }
 }
