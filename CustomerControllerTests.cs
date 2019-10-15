@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using WebAPIStarter.Controllers;
 using WebAPIStarter.Models;
+using WebAPIStarter.Services.CustomerService;
 using Xunit;
 
 namespace WebAPIStarter.Tests
@@ -13,9 +15,9 @@ namespace WebAPIStarter.Tests
         [Fact]
         public void GetAll_WhenCalled_ReturnsOKObjectResult()
         {
-
+            var mockService = new Mock<IService<Customer>>();
             //Arrange
-            CustomerController customerController = new CustomerController();
+            CustomerController customerController = new CustomerController(mockService.Object);
 
             //Act
             var getResults = customerController.GetAll();
@@ -29,7 +31,8 @@ namespace WebAPIStarter.Tests
         public void CreateCustomer_WhenCalled_WithValidCustomer_ReturnsCreatedResult(){
 
             //Given
-            CustomerController customerController = new CustomerController();
+            var mockService = new Mock<IService<Customer>>();
+            CustomerController customerController = new CustomerController(mockService.Object);
             Customer newCustomer = new Customer {
                 FirstName = "Gil",
                 LastName = "Hdz",
@@ -47,7 +50,8 @@ namespace WebAPIStarter.Tests
 
         [Fact]
         public void GetCustomer_WhenCalledWithInvalidID_ReturnsNotFoundResult(){
-            CustomerController customerController = new CustomerController();
+            var mockService = new Mock<IService<Customer>>();
+            CustomerController customerController = new CustomerController(mockService.Object);
             int nonExistingId = 25;
 
             var getResults = customerController.Read(nonExistingId);
@@ -57,7 +61,12 @@ namespace WebAPIStarter.Tests
 
         [Fact]
         public void DeleteCustomer_WhenCalledWithAnID_ReturnsGoneResult(){
-            CustomerController customerController = new CustomerController();
+
+            var mockService = new Mock<IService<Customer>>();
+            var fakeCustomer = new Customer() { Id = 1, FirstName = "Gil", LastName = "Hdz", Email = "mah.mail@man.com" };
+            mockService.Setup(serv => serv.GetOne(1)).Returns(fakeCustomer);
+
+            CustomerController customerController = new CustomerController(mockService.Object);
             int existingId = 1;
 
             var getResults = customerController.Delete(existingId);
@@ -70,12 +79,11 @@ namespace WebAPIStarter.Tests
         {
 
             //Arrange
-            var customers = new List<Customer>{
-                new Customer() { Id = 1, FirstName = "Gil", LastName = "Hdz", Email = "mah.mail@man.com" },
-                new Customer() { Id = 2, FirstName = "Gil2", LastName = "Hdz", Email = "mah.mail@man.com" },
-                new Customer() { Id = 3, FirstName = "Gil3", LastName = "Hdz", Email = "mah.mail@man.com" }
-            };
-            CustomerController customerController = new CustomerController(customers);
+            var mockService = new Mock<IService<Customer>>();
+            var fakeCustomer = new Customer() { Id = 1, FirstName = "Gil", LastName = "Hdz", Email = "mah.mail@man.com" };
+            mockService.Setup(serv => serv.GetOne(1)).Returns(fakeCustomer);
+
+            CustomerController customerController = new CustomerController( mockService.Object );
             int existingId = 1;
 
             //Act
@@ -91,12 +99,12 @@ namespace WebAPIStarter.Tests
         {
 
             //Arrange
-            var customers = new List<Customer>{
+            var customerService = new InMemoryCustomerService(new List<Customer>{
                 new Customer() { Id = 1, FirstName = "Gil", LastName = "Hdz", Email = "mah.mail@man.com" },
                 new Customer() { Id = 2, FirstName = "Gil2", LastName = "Hdz", Email = "mah.mail@man.com" },
                 new Customer() { Id = 3, FirstName = "Gil3", LastName = "Hdz", Email = "mah.mail@man.com" }
-            };
-            CustomerController SUT = new CustomerController(customers); //System Under Test
+            });
+            CustomerController SUT = new CustomerController(customerService); //System Under Test
             var expected = new Customer() { Id = 1, FirstName = "Gil", LastName = "Hdz", Email = "mah.mail@man.com" };
 
             //Act
@@ -115,27 +123,34 @@ namespace WebAPIStarter.Tests
         public void CreateCustomer_WhenCalled_WithValidCustomer_ReturnsCustomer(){
 
             //Given
+            // var mockService = new Mock<IService<Customer>>();
+            // CustomerController customerController = new CustomerController(mockService.Object);
             CustomerController customerController = new CustomerController();
             Customer newCustomer = new Customer {
                 FirstName = "Gil",
                 LastName = "Hdz",
                 Email = "some@other.net"
             };
-            Customer testDouble = new Customer {
+            
+            Customer[] testDouble = {new Customer {
                 FirstName = "Gil",
                 Id = 1,
                 LastName = "Hdz",
                 Email = "some@other.net"
-            };
+            }, null};
 
             //When
             var getResults = (CreatedResult) customerController.Create(newCustomer);
+            
 
             //Then
             var res = getResults.Value as Customer;
-            res.Should().Equals(testDouble); //Kind of shouldn't work, but it does
+            Customer[] originalSet = {null, res};
+            originalSet.Should().BeEquivalentTo(testDouble); //Le vale el orden
+            // originalSet.Should().Equal(testDouble); //Le importa el orden
             //Completed
 
         }
     }
+
 }
