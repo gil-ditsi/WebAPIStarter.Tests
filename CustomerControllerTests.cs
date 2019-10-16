@@ -15,7 +15,7 @@ namespace WebAPIStarter.Tests
         [Fact]
         public void GetAll_WhenCalled_ReturnsOKObjectResult()
         {
-            var mockService = new Mock<IService<Customer>>();
+            var mockService = new Mock<IServiceOfT<Customer>>();
             //Arrange
             CustomerController customerController = new CustomerController(mockService.Object);
 
@@ -31,7 +31,7 @@ namespace WebAPIStarter.Tests
         public void CreateCustomer_WhenCalled_WithValidCustomer_ReturnsCreatedResult(){
 
             //Given
-            var mockService = new Mock<IService<Customer>>();
+            var mockService = new Mock<IServiceOfT<Customer>>();
             CustomerController customerController = new CustomerController(mockService.Object);
             Customer newCustomer = new Customer {
                 FirstName = "Gil",
@@ -50,7 +50,7 @@ namespace WebAPIStarter.Tests
 
         [Fact]
         public void GetCustomer_WhenCalledWithInvalidID_ReturnsNotFoundResult(){
-            var mockService = new Mock<IService<Customer>>();
+            var mockService = new Mock<IServiceOfT<Customer>>();
             CustomerController customerController = new CustomerController(mockService.Object);
             int nonExistingId = 25;
 
@@ -62,7 +62,7 @@ namespace WebAPIStarter.Tests
         [Fact]
         public void DeleteCustomer_WhenCalledWithAnID_ReturnsGoneResult(){
 
-            var mockService = new Mock<IService<Customer>>();
+            var mockService = new Mock<IServiceOfT<Customer>>();
             var fakeCustomer = new Customer() { Id = 1, FirstName = "Gil", LastName = "Hdz", Email = "mah.mail@man.com" };
             mockService.Setup(serv => serv.GetOne(1)).Returns(fakeCustomer);
 
@@ -79,7 +79,7 @@ namespace WebAPIStarter.Tests
         {
 
             //Arrange
-            var mockService = new Mock<IService<Customer>>();
+            var mockService = new Mock<IServiceOfT<Customer>>();
             var fakeCustomer = new Customer() { Id = 1, FirstName = "Gil", LastName = "Hdz", Email = "mah.mail@man.com" };
             mockService.Setup(serv => serv.GetOne(1)).Returns(fakeCustomer);
 
@@ -134,7 +134,7 @@ namespace WebAPIStarter.Tests
                 Email = "some@other.net",
                 Id = 1
             };
-            var mockService = new Mock<IService<Customer>>();
+            var mockService = new Mock<IServiceOfT<Customer>>();
             mockService.Setup(service => service.Add(newCustomer)).Returns(modifiedCustomer);
 
             CustomerController customerController = new CustomerController(mockService.Object);
