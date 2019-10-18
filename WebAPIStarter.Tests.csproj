@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebAPIStarter\WebAPIStarter.csproj" />
+    <ProjectReference Include="..\WebAPIStarter.Data\WebAPIStarter.Data.csproj" />
+    <ProjectReference Include="..\EFGetStarted\EFGetStarted.csproj" />
   </ItemGroup>
 
 </Project>
