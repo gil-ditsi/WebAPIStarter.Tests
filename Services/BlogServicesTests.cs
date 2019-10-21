@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using FluentAssertions;
 
-namespace WebAPIStarter.Tests
+namespace WebAPIStarter.Tests.Services
 {
     public class BlogServicesTests
     {
