@@ -56,7 +56,23 @@ namespace WebAPIStarter.Tests
         [Fact]
         public void Delete_ShouldDelete(){
 
-            //DoTest //Or not
+            var options = new DbContextOptionsBuilder<BloggingContext>()
+                .UseInMemoryDatabase(databaseName: "MAhDeleteDatabase").Options;
+            
+            using (var context = new BloggingContext(options))
+            {
+                var service = new BlogService(context);
+                service.Add("http://Hi.I.Am.A.New.Blog");
+                service.Add("http://Hi.Ill.BeDeleted");
+            }
+            
+            using (var context = new BloggingContext(options))
+            {
+                var service = new BlogService(context);
+                var toDelete = service.Find("Deleted").Single();
+                context.Blogs.Remove(toDelete);
+                context.Blogs.Count().Equals(1); //Yeeeeiii
+            }
 
         }
         
